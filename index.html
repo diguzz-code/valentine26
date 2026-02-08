@@ -2,17 +2,131 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>il giorno più bello</title>
-<link rel="stylesheet" href="style.css">
+<title>Will You Be My Valentine? 💖🥰</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    background: pink;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Center everything vertically */
+    min-height: 100vh;
+    overflow-x: hidden;
+    text-align: center;
+}
+
+/* TITLE */
+h1 {
+    font-size: 3.2em;
+    margin-bottom: 30px;
+}
+
+/* BIG GIFS */
+#sadImage, #finalHappyImage {
+    width: 95%;         /* Huge width */
+    height: 450px;       /* Fixed height */
+    object-fit: cover;   /* Maintain aspect ratio without squishing */
+    border-radius: 22px;
+    margin: 20px auto;
+    display: block;
+}
+
+/* BUTTON AREA */
+#buttonContainer {
+    margin-top: 40px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+/* BUTTONS */
+button {
+    font-size: 32px;
+    padding: 22px 44px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    white-space: nowrap;
+}
+
+#yes {
+    background: #e60000;
+    color: white;
+    width: 220px;
+}
+
+#no {
+    background: white;
+    color: black;
+    width: 220px;
+}
+
+/* FIST */
+#fist {
+    position: fixed;
+    font-size: 64px;
+    left: -80px;
+    top: -80px;
+    display: none;
+    z-index: 999;
+    pointer-events: none;
+}
+
+/* HEARTS */
+.heart {
+    position: absolute;
+    font-size: 38px;
+    animation: float 3s linear infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    50% { transform: translateY(-60px) scale(1.2); opacity: 0.8; }
+    100% { transform: translateY(-120px) scale(1); opacity: 0; }
+}
+
+/* FIST PUNCH */
+@keyframes fistPunch {
+    0% { transform: translate(0,0) scale(1); }
+    60% { transform: translate(var(--hit-x), var(--hit-y)) scale(1.2); }
+    80% { transform: translate(calc(var(--hit-x) - 10px), calc(var(--hit-y) + 8px)) scale(1.35); }
+    100% { transform: translate(var(--hit-x), var(--hit-y)) scale(1.25); }
+}
+
+/* YES BOUNCE */
+@keyframes yesBounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.18); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+/* NO SHAKE */
+@keyframes noShake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-12px); }
+    50% { transform: translateX(12px); }
+    75% { transform: translateX(-10px); }
+    100% { transform: translateX(0); }
+}
+</style>
 </head>
+
 <body>
+
+<!-- 🎵 BACKGROUND MUSIC -->
 <audio id="bgMusic" loop>
-    <source src="tristanoeisotta.m4a" type="audio/mp4">
+    <source src="perfect.mp3" type="audio/mpeg">
 </audio>
 
 <div id="mainContent">
 <h1>Will you be my Valentine? 💖🥰</h1>
-<img id="sadImage" src="valentine.webp" alt="valentine" />
+<img src="valentine.webp" id="sadImage">
 
 <div id="buttonContainer">
     <button id="yes">YES 💖</button>
@@ -24,6 +138,126 @@
 
 <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
 
-<script src="script.js"></script>
+<script>
+const bgMusic = document.getElementById("bgMusic");
+bgMusic.volume = 0;
+const sadMedia = document.getElementById("sadImage");
+document.addEventListener("click", () => {
+    if(bgMusic.paused){
+        bgMusic.play().catch(()=>{});
+        if(sadMedia && typeof sadMedia.play === 'function') sadMedia.play().catch(()=>{});
+        let vol = 0;
+        const fadeIn = setInterval(()=>{
+        vol += 0.02;
+        if(vol >= 0.5){ vol=0.5; clearInterval(fadeIn);}
+        bgMusic.volume = vol;
+        },100);
+    }
+},{once:true});
+
+let noClicks = 0;
+const messages = [
+"Gaiuzz🥺",
+"Dai bby..",
+"Solo tu..",
+"Mia🌙",
+"..💫"
+];
+
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+const fist = document.getElementById("fist");
+const mainContent = document.getElementById("mainContent");
+
+/* HEARTS */
+function createHeart(){
+const heart = document.createElement("div");
+heart.className="heart";
+heart.innerText="❤️";
+heart.style.left = yesBtn.offsetLeft + Math.random()*yesBtn.offsetWidth + "px";
+heart.style.top = yesBtn.offsetTop + "px";
+document.body.appendChild(heart);
+setTimeout(()=>heart.remove(),3000);
+}
+
+/* NO CLICK */
+noBtn.addEventListener("click", ()=>{
+    if(noClicks>=5) return;
+    noClicks++;
+    noBtn.innerText = messages[noClicks-1];
+    yesBtn.style.width = Math.min(220+noClicks*35,window.innerWidth-40)+"px";
+    createHeart();
+
+    if(noClicks===5){
+        const rect = noBtn.getBoundingClientRect();
+        fist.style.display = "block";
+        fist.style.setProperty("--hit-x", rect.left+"px");
+        fist.style.setProperty("--hit-y", rect.top+"px");
+        fist.style.animation = "fistPunch 0.9s ease-out forwards";
+        yesBtn.style.animation = "yesBounce 0.6s";
+        noBtn.style.animation = "noShake 0.6s";
+
+        setTimeout(()=>{
+            noBtn.style.display="none";
+            fist.style.display="none";
+            yesBtn.style.width=window.innerWidth-40+"px";
+            yesBtn.style.fontSize="38px";
+            },900);
+        }
+});
+
+/* YES CLICK */
+yesBtn.addEventListener("click", ()=>{
+mainContent.style.display = "none";
+
+const finalScreen = document.createElement("div");
+finalScreen.style.display = "flex";
+finalScreen.style.flexDirection = "column";
+finalScreen.style.alignItems = "center";
+finalScreen.style.justifyContent = "center";
+finalScreen.style.minHeight = "100vh";
+finalScreen.style.textAlign="center";
+finalScreen.innerHTML = `
+    <h1 style="font-size:4.5em;">Siiii🌙❤️</h1>
+    <img id="finalHappyImage" src="minion_heart.webp" style="width: 95%; height: 450px; border-radius: 22px; margin: 20px auto; display: block; object-fit: cover;" alt="minion heart">
+    <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+`;
+document.body.appendChild(finalScreen);
+startConfetti();
+});
+
+/* CONFETTI */
+function startConfetti(){
+const canvas=document.getElementById("confettiCanvas");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+const confetti = Array.from({length:120}, ()=>({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*6+4,
+    d: Math.random()*100,
+    color: `hsl(${Math.random()*360},100%,50%)`
+}));
+
+let angle = 0;
+setInterval(()=>{
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    angle+=0.01;
+    confetti.forEach(c=>{
+        ctx.beginPath();
+        ctx.strokeStyle=c.color;
+        ctx.lineWidth=c.r;
+        ctx.moveTo(c.x,c.y);
+        ctx.lineTo(c.x+2,c.y+c.r*2);
+        ctx.stroke();
+        c.y+=Math.cos(angle+c.d)+3;
+        if(c.y>canvas.height) c.y=-10;
+    });
+    },20);
+}
+</script>
+
 </body>
 </html>

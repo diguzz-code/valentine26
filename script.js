@@ -1,8 +1,10 @@
 const bgMusic = document.getElementById("bgMusic");
 bgMusic.volume = 0;
+const sadVideo = document.getElementById("sadImage");
 document.addEventListener("click", () => {
     if(bgMusic.paused){
         bgMusic.play().catch(()=>{});
+        if(sadVideo) sadVideo.play().catch(()=>{});
         let vol = 0;
         const fadeIn = setInterval(()=>{
         vol += 0.02;
@@ -76,7 +78,7 @@ finalScreen.style.minHeight = "100vh";
 finalScreen.style.textAlign="center";
 finalScreen.innerHTML = `
     <h1 style="font-size:4.5em;">Siiii🌙❤️</h1>
-    <video id="finalHappyImage" style="width: 95%; height: 450px; border-radius: 22px; margin: 20px auto; display: block; object-fit: cover;" autoplay loop muted>
+    <video id="finalHappyImage" style="width: 95%; height: 450px; border-radius: 22px; margin: 20px auto; display: block; object-fit: cover;" autoplay loop muted playsinline webkit-playsinline>
         <source src="minion_heart.mp4" type="video/mp4">
     </video>
     <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
